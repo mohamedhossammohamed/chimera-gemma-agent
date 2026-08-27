@@ -16,22 +16,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: {python-version: '3.11'}
-      - run: pip install -e .[dev] || pip install -r requirements.txt || true
-      - run: pytest -q || true
-      - run: mkdir -p docs/iterations && cp -r iterations/* docs/iterations/ 2>/dev/null || true
-      - run: |
-          cat > docs/index.md << 'MD'
-          # CHIMERA Gemma Agent — Iteration Gallery
-          Professional GitHub Pages for 10 swarm iterations.
-          - Iter-01: scaffold + 15 defects fixed, mock Gemma, site-norm, V-PSA flag
-          MD
+        with:
+          python-version: '3.11'
+      - run: pip install -e . 2>&1 | head -n 20
+      - run: pytest -q
       - uses: actions/upload-pages-artifact@v3
-        with: {path: docs}
+        with:
+          path: docs
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    environment: {name: github-pages, url: ${{ steps.deployment.outputs.page_url }}}
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
