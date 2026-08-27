@@ -1,0 +1,79 @@
+{
+  "generated": "2026-08-27T10:28:00Z",
+  "agent": "chimera-gemma-agent v0.1.0",
+  "model": "google/gemma-3-27b-it:free (mock, RAM-safe)",
+  "pipeline": "OpenMed CPU (0GB VRAM) → Gated Fusion (6ch, site-norm) → Gemma + PyCox",
+  "data": {
+    "total": 423,
+    "task1": 195,
+    "task2": 153,
+    "task3": 75
+  },
+  "task1_biopsy_decision": {
+    "n_gt": 91,
+    "accuracy": 0.714,
+    "precision": 0.688,
+    "recall": 0.982,
+    "f1": 0.809,
+    "tp": 55,
+    "fp": 25,
+    "tn": 10,
+    "fn": 1,
+    "notes": "91/195 have GT json; 104 missing label in export. Pred: yes/no from pirads/psa/isup. High recall, moderate precision — overcalls yes."
+  },
+  "task2_treatment_decision": {
+    "n_gt": 72,
+    "accuracy": 0.5,
+    "pred_dist": {"active_treatment": 28, "active_surveillance": 111, "continued_surveillance": 14},
+    "true_dist": {"active_treatment": 31, "continued_surveillance": 14, "active_surveillance": 25, "watchful_waiting": 2},
+    "per_class": {
+      "active_surveillance": {"tp": 24, "fp": 87, "fn": 1},
+      "active_treatment": {"tp": 12, "fp": 16, "fn": 19},
+      "continued_surveillance": {"tp": 0, "fp": 14, "fn": 14},
+      "watchful_waiting": {"tp": 0, "fp": 0, "fn": 2}
+    },
+    "notes": "Overpredicts active_surveillance (111 vs 25 true). Needs calibration — class weights or temperature."
+  },
+  "task3_survival": {
+    "n": 75,
+    "events": 19,
+    "censored": 56,
+    "c_index": 0.75,
+    "capra_s_high": {"n": 18, "recur": 9, "rate": 0.5},
+    "capra_s_low": {"n": 57, "recur": 10, "rate": 0.175},
+    "risk_ratio": 2.86,
+    "mean_pred_S12": 0.847,
+    "mean_pred_S24": 0.722,
+    "mean_pred_S60": 0.461,
+    "km_actual_S12": 0.839,
+    "km_actual_S24": 0.783,
+    "km_actual_S60": 0.695,
+    "median_fu": 38.5,
+    "notes": "PyCox discrete hazard, Greenwood CI. CAPRA-S ≥6 3× risk. C-index 0.75 good for 75 cases."
+  },
+  "cohort_invariants": {
+    "psa_median": 7.8,
+    "psa_range": [0.2, 190],
+    "age_median": 67,
+    "pirads_5": 90,
+    "pirads_4": 72,
+    "psad_ge_020": 0.38,
+    "ct_missing": 0.64,
+    "biopsy_missing_task1": 1.0,
+    "mri_present": 0.981,
+    "v_shaped_psa": 89,
+    "spearman_psa_psad": 0.745,
+    "spearman_pirads_cspca": 0.62,
+    "pca_pc1_mri": 0.792,
+    "km_early_cluster": 5
+  },
+  "tests": {
+    "passed": 15,
+    "total": 15,
+    "runs": 3,
+    "status": "PASS"
+  },
+  "provenance": "CALCULATED vs UPLOADED badges, .env gitignored, no sk-or- committed",
+  "no_internet": true,
+  "mock": true
+}

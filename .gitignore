@@ -1,0 +1,36 @@
+# secrets
+.env
+.env.local
+*.key
+*.pem
+
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+*.whl
+
+# data (large)
+train_release/
+*.npy
+*.pt
+*.ckpt
+
+# iteration outputs (keep logs but ignore large caches)
+iterations/*/outputs/
+iterations/*/cache/
+.swarm/
+tmp/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp

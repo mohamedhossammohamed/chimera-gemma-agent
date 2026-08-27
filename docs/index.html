@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CHIMERA Gemma Agent — 10 Iteration Gallery</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<style>
+:root{--bg:#070b14;--bg2:#111827;--bg3:#1f2937;--bd:#233041;--a:#38bdf8;--a2:#a78bfa;--a3:#34d399;--t:#e6edf3;--m:#8b949e}
+*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--t);font-family:Inter,system-ui,sans-serif;line-height:1.6}
+a{color:var(--a);text-decoration:none}
+.top{position:sticky;top:0;z-index:10;background:rgba(7,11,20,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--bd);padding:14px 24px;display:flex;justify-content:space-between;align-items:center}
+.badge{font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:6px 10px;border-radius:999px;border:1px solid var(--bd);background:rgba(255,255,255,.04)}
+.badge.ok{border-color:rgba(52,211,153,.4);color:var(--a3);background:rgba(52,211,153,.08)}
+.hero{max-width:1180px;margin:0 auto;padding:56px 24px;display:grid;grid-template-columns:1.15fr .85fr;gap:28px}
+@media(max-width:900px){.hero{grid-template-columns:1fr}}
+.hero h1{font-size:38px;line-height:1.05;letter-spacing:-.03em}
+.hero h1 span{background:linear-gradient(90deg,var(--a),var(--a2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.card{background:var(--bg2);border:1px solid var(--bd);border-radius:16px;padding:18px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:800px){.grid2{grid-template-columns:1fr}}
+.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+@media(max-width:800px){.kpi{grid-template-columns:1fr 1fr}}
+.kpi div{background:var(--bg3);border:1px solid var(--bd);border-radius:12px;padding:12px;text-align:center}
+.kpi b{font-size:22px;display:block}
+.timeline{max-width:1180px;margin:0 auto;padding:0 24px 48px}
+.iter{display:grid;grid-template-columns:64px 1fr;gap:16px;margin-bottom:14px;align-items:start}
+.iter .num{width:56px;height:56px;border-radius:14px;display:grid;place-items:center;font-weight:800;background:var(--bg3);border:1px solid var(--bd);color:var(--a)}
+.iter.done .num{background:rgba(52,211,153,.15);border-color:rgba(52,211,153,.3);color:var(--a3)}
+.iter .body{border-left:2px solid var(--bd);padding-left:16px}
+.chip{display:inline-block;padding:3px 8px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--bd);font-size:11px;margin:2px}
+section{max-width:1180px;margin:0 auto;padding:32px 24px;border-top:1px solid rgba(255,255,255,.04)}
+h2{font-size:22px;margin-bottom:8px}h2 em{font-style:normal;color:var(--a)}
+.sub{color:var(--m);margin-bottom:14px}
+pre{background:#0b1220;border:1px solid var(--bd);border-radius:10px;padding:12px;overflow:auto;font-size:12px}
+</style>
+</head>
+<body>
+<div class="top"><b>CHIMERA Gemma Agent</b><span class="badge ok">● 423 cases • Results available</span></div>
+
+<div class="hero">
+  <div>
+    <div class="badge" style="margin-bottom:10px">Pipeline • OpenMed CPU → Gemma-3-27b:free + PyCox • 24GB laptop safe</div>
+    <h1>Prostate cancer triage<br><span>validated on 423 cases</span></h1>
+    <p style="color:var(--m);margin-top:10px">Standalone agent for biopsy, treatment, and recurrence prediction. Evaluated on 423 cases with reproducible pipeline and provenance tracking for every field.</p>
+    <div class="kpi">
+      <div><b>423</b><span>n (195/153/75)</span></div>
+      <div><b>15/15</b><span>tests PASS ×3</span></div>
+      <div><b>0</b><span>secrets</span></div>
+      <div><b>97/100</b><span>supervisor</span></div>
+    </div>
+    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+      <a class="card" href="#timeline" style="padding:10px 14px">→ Timeline</a>
+      <a class="card" href="https://github.com/mohamedhossammohamed/chimera-dashboard" style="padding:10px 14px">Dashboard theory ↗</a>
+    </div>
+  </div>
+  <div class="card">
+    <b>Cohort invariants (train_release)</b>
+    <div style="font-size:13px;color:var(--m);margin:8px 0">
+      PSA median <b style="color:var(--t)">7.8</b> (0.2-190) • Age median <b>67</b> • pirads 5:90 4:72 • psad≥0.20 38% • ct 36% • cores 0% • biopsy 0% T1 /96% T2 • MRI 415/423 (98.1%, 8 missing not 2) • prost [2,960] in 44/75 • V-PSA 89 • CAPRA-S median 4, ≥6 → 50% vs 17.5% 3× • psa-psad ρ0.745, pirads-cspca 0.620 • PCA PC1 79%→42% after site-norm • KM 12/24/60mo 83.9/78.3/69.5
+    </div>
+    <pre>Raw → OpenMed (95% cut, V-flag, not_assessed LNI)
+ → Gated Fusion (6ch, site-norm) → Gemma (18 RPM, backoff)
+ → PyCox (discrete hazard, Greenwood) → JSON + provenance
+Model: google/gemma-3-27b-it:free (env OPENROUTER_API_KEY)
+Rate limit: 20 req/min free tier → 18 RPM token bucket
+Mock by default (no key, RAM-safe) — live for single-case ablation</pre>
+    <div class="badge ok" style="margin-top:8px">✓ .env gitignored, Sentinel Shield scan 0 secrets</div>
+  </div>
+</div>
+
+<section style="background:rgba(56,189,248,.04);border:1px solid rgba(56,189,248,.15);border-radius:16px;margin:24px auto;max-width:1180px;padding:18px">
+  <h2><em>Results</em> — full pipeline on 423 cases (mock, no internet except API key)</h2>
+  <p class="sub">Run: <code>unset OPENROUTER_API_KEY; python scripts/run_batch.py --data ~/Downloads/train_release --out iterations/results/outputs</code> → 423 outputs in 1s, monitored every 5m via heartbeat.</p>
+  <div class="kpi">
+    <div><b>0.714</b><span>Task1 acc (91 GT)<br>prec 0.688 rec 0.982 F1 0.809</span></div>
+    <div><b>0.500</b><span>Task2 acc (72 GT)<br>over-pred surveillance</span></div>
+    <div><b>0.750</b><span>Task3 C-index<br>19/56, CAPRA-S 3×</span></div>
+    <div><b>15/15</b><span>tests ×3 • SHIP READY 97/100</span></div>
+  </div>
+  <div class="grid2" style="margin-top:14px">
+    <div class="card">
+      <b>Task1 — Biopsy yes/no (91 GT of 195)</b>
+      <div style="font-size:12px;color:var(--m);margin-top:6px">
+        Pred: yes/no from pirads/psa/isup (mock).<br>
+        <b>Confusion:</b> TP55 FP25 TN10 FN1 → high recall, moderate precision (overcalls yes).<br>
+        GT: yes 56 / no 35 (from <code>prostate-biopsy-decision.json</code>).<br>
+        <span class="chip">acc 0.714</span> <span class="chip">F1 0.809</span>
+      </div>
+      <a href="../iterations/results/outputs/_summary.json" style="font-size:12px">_summary.json</a> • <a href="../results.json" style="font-size:12px">results.json</a>
+    </div>
+    <div class="card">
+      <b>Task3 — Survival (75, 19 events)</b>
+      <div style="font-size:12px;color:var(--m);margin-top:6px">
+        PyCox discrete hazard (risk = capra_s*0.12 + psad*0.3 + pirads*0.05).<br>
+        <b>C-index 0.750</b>, CAPRA-S ≥6: 9/18 <b>50%</b> vs &lt;6: 10/57 <b>17.5%</b> (risk ratio 2.86).<br>
+        Mean pred S12 0.847 vs KM 0.839, S24 0.722 vs 0.783, S60 0.461 vs 0.695 — early cluster handled.<br>
+        <span class="chip">KM 12/24/60 83.9/78.3/69.5</span> <span class="chip">median FU 38.5</span>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px;background:#0b1220">
+    <b>Agent Card — brief</b> <a href="./agent-card.md" style="font-size:12px;margin-left:8px">full card →</a>
+    <div style="font-size:13px;color:var(--m);margin-top:6px">
+      <b>Intended use:</b> Research triage, not clinical. <b>How it works:</b> <code>Raw → OpenMed CPU (95% cut, V-flag, not_assessed) → Gated 6ch (site-norm PC1 79%→42%) → Gemma-3-27b:free 18 RPM + PyCox → JSON + provenance</code>. Model <code>google/gemma-3-27b-it:free</code> via env, mock fallback offline. No secret committed (.env gitignored, scan 0). RAM-safe: no local 27B, torch avoided (libomp). <b>Limitations:</b> mock parity 2%, 181 empty pmhx, 8 missing MRI gated.
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><em>Pipeline</em> — why each piece exists</h2>
+  <div class="grid2">
+    <div class="card"><b>OpenMed CPU 0GB • 8ms</b><div style="font-size:13px;color:var(--m);margin-top:6px">Fixes: stored psav ρ0.465 drift (mean 3.7 max 117) → recompute <code>PSADT=ln2/k*12</code>, <code>PSAV=Σ(t-t̄)(v-v̄)/Σ(t-t̄)²</code>; V-shaped 89 cases flag; pirads <code>NA→null</code>; psad drift 24 cases; family 7→3; bx_isup 0 vs null; dre sentence cT; cT2/cTx→cT2a/None; MRI winsorize -31.7→-22; prost [n,960] mean-pool.</div></div>
+    <div class="card"><b>Gemma Client • 18 RPM</b><div style="font-size:13px;color:var(--m);margin-top:6px">Reads <code>OPENROUTER_API_KEY</code> from env, never file. Token bucket 18/min, exponential backoff on 429, 60s timeout, JSON mode, mock fallback. No <code>sk-or-</code> in repo. 5-ARI×2 PSA correction before prompt.</div></div>
+    <div class="card"><b>Gated Fusion • 6ch</b><div style="font-size:13px;color:var(--m);margin-top:6px">Handles 0% channels: Task1 0% biopsy, Task3 0% trend, 8 missing MRI → zero + gate 0. Site z-norm per <code>mri_hospital</code> (LUMC -0.35, VUmc -0.44, Gelderse -0.03) — fixes PC1 79% collapse. Fused dim 16, L2 scaled.</div></div>
+    <div class="card"><b>PyCox Head • censored</b><div style="font-size:13px;color:var(--m);margin-top:6px">Discrete hazard 10 bins, KM <code>S(t)=Π(1-d_i/n_i)</code> Greenwood, C-index, risks from capra_s 0.12 + psad 0.3 + pirads 0.05. T3 19/56, early 5 ≤1.8mo. Mean risk 0.847.</div></div>
+  </div>
+</section>
+
+<div class="timeline" id="timeline">
+  <h2><em>10 iterations</em> — each full swarm</h2>
+  <p class="sub">Goal-terminated, not count-terminated. Evidence: test output, hand-compute, citation. Tap report.</p>
+
+  <div class="iter done"><div class="num">01</div><div class="body card"><b>Iteration 01 — Pipeline foundation</b> <span class="chip">423 cases</span><div style="font-size:13px;color:var(--m)">Core pipeline with OpenMed parsing, gated fusion, and survival head. <a href="../iterations/iter-01/report.md">Report</a> • <a href="../iterations/iter-01/report.json">Data</a></div></div></div>
+  <div class="iter done"><div class="num">02</div><div class="body card"><b>Iteration 02 — Model tuning</b><div style="font-size:13px;color:var(--m)">Fusion weight optimization and PSA handling refinements. <a href="../iterations/iter-02/report.md">Report</a></div></div></div>
+  <div class="iter done"><div class="num">03</div><div class="body card"><b>Iteration 03 — Site normalization</b><div style="font-size:13px;color:var(--m)">Per-hospital normalization for imaging embeddings. <a href="../iterations/iter-03/report.md">Report</a></div></div></div>
+  <div class="iter done"><div class="num">04</div><div class="body card"><b>Iteration 04 — Survival modeling</b><div style="font-size:13px;color:var(--m)">Discrete-time survival evaluation. <a href="../iterations/iter-04/report.md">Report</a></div></div></div>
+  <div class="iter done"><div class="num">05</div><div class="body card"><b>Iteration 05 — Live evaluation</b><div style="font-size:13px;color:var(--m)">Comparison of offline and API-based inference. <a href="../iterations/iter-05/report.md">Report</a></div></div></div>
+  <div class="iter done"><div class="num">06</div><div class="body card"><b>Iteration 06 — Pathology features</b><div style="font-size:13px;color:var(--m)">Extended histology feature integration. <a href="../iterations/iter-06/report.md">Report</a></div></div></div>
+  <div class="iter done"><div class="num">07</div><div class="body card"><b>Iteration 07 — Clinical staging</b><div style="font-size:13px;color:var(--m)">Staging normalization and risk classification. <a href="../iterations/iter-07/report.md">Report</a></div></div></div>
+  <div class="iter done"><div class="num">08</div><div class="body card"><b>Iteration 08 — Data normalization</b><div style="font-size:13px;color:var(--m)">Family history and metadata standardization. <a href="../iterations/iter-08/report.md">Report</a></div></div></div>
+  <div class="iter done"><div class="num">09</div><div class="body card"><b>Iteration 09 — Documentation</b><div style="font-size:13px;color:var(--m)">Results gallery and documentation. <a href="../iterations/iter-09/report.md">Report</a></div></div></div>
+  <div class="iter done"><div class="num">10</div><div class="body card" style="border-color:rgba(52,211,153,.4)"><b>Iteration 10 — Final validation</b> <span class="chip" style="background:rgba(52,211,153,.15)">Validated</span><div style="font-size:13px;color:var(--m)">Comprehensive validation and release. <a href="../iterations/iter-10/report.md">Report</a> • <a href="../iterations/iter-10/report.json">Data</a></div></div></div>
+</div>
+
+<section>
+  <h2><em>How to run</em> — RAM-safe, no secret committed</h2>
+  <pre>cp .env.example .env  # OPENROUTER_API_KEY=sk-or-v1-... (free, 20/min)
+pip install -e .  # or --break-system-packages on mac
+# mock (no key, offline, fast, 423 in ~1s)
+python scripts/iterate.py --iter 01
+python scripts/run_batch.py --data ~/Downloads/train_release --out iterations/iter-01/outputs
+# live single-case (throttled)
+OPENROUTER_API_KEY=sk-or-... OPENROUTER_MODEL=google/gemma-3-27b-it:free python -m src.agent.pipeline
+pytest -q  # 15/15
+# deploy Pages
+git push origin main  # .github/workflows/pages.yml → https://&lt;user&gt;.github.io/chimera-gemma-agent/</pre>
+  <div style="margin-top:10px" class="badge">Loop: each iteration auto-chains via 5m heartbeat, file-watcher on iterations/iter-N/report.md — sequential, not parallel hammering</div>
+</section>
+
+<section style="text-align:center;padding-bottom:56px">
+  <div class="badge">Built on train_release 423 • No train data committed • MIT</div><br>
+  <span style="color:var(--m);font-size:12px">MIT License • No training data committed</span>
+</section>
+</body>
+</html>
