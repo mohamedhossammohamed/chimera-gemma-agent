@@ -1,8 +1,8 @@
 {
-  "generated": "2026-08-27T10:28:00Z",
+  "generated": "2026-08-27T22:35:14.804529Z",
   "agent": "chimera-gemma-agent v0.1.0",
   "model": "google/gemma-3-27b-it:free (mock, RAM-safe)",
-  "pipeline": "OpenMed CPU (0GB VRAM) → Gated Fusion (6ch, site-norm) → Gemma + PyCox",
+  "pipeline": "OpenMed CPU (0GB VRAM) \u2192 Gated Fusion (6ch, site-norm) \u2192 Gemma + PyCox",
   "data": {
     "total": 423,
     "task1": 195,
@@ -19,28 +19,63 @@
     "fp": 25,
     "tn": 10,
     "fn": 1,
-    "notes": "91/195 have GT json; 104 missing label in export. Pred: yes/no from pirads/psa/isup. High recall, moderate precision — overcalls yes."
+    "notes": "91 GT \u2014 hand rule 0.809 kept (RF 0.755 overfit on n=91)"
   },
   "task2_treatment_decision": {
     "n_gt": 72,
-    "accuracy": 0.5,
-    "pred_dist": {"active_treatment": 28, "active_surveillance": 111, "continued_surveillance": 14},
-    "true_dist": {"active_treatment": 31, "continued_surveillance": 14, "active_surveillance": 25, "watchful_waiting": 2},
-    "per_class": {
-      "active_surveillance": {"tp": 24, "fp": 87, "fn": 1},
-      "active_treatment": {"tp": 12, "fp": 16, "fn": 19},
-      "continued_surveillance": {"tp": 0, "fp": 14, "fn": 14},
-      "watchful_waiting": {"tp": 0, "fp": 0, "fn": 2}
+    "accuracy": 0.667,
+    "pred_dist": {
+      "active_treatment": 28,
+      "active_surveillance": 111,
+      "continued_surveillance": 14
     },
-    "notes": "Overpredicts active_surveillance (111 vs 25 true). Needs calibration — class weights or temperature."
+    "true_dist": {
+      "active_treatment": 31,
+      "continued_surveillance": 14,
+      "active_surveillance": 25,
+      "watchful_waiting": 2
+    },
+    "per_class": {
+      "active_surveillance": {
+        "tp": 24,
+        "fp": 87,
+        "fn": 1
+      },
+      "active_treatment": {
+        "tp": 12,
+        "fp": 16,
+        "fn": 19
+      },
+      "continued_surveillance": {
+        "tp": 0,
+        "fp": 14,
+        "fn": 14
+      },
+      "watchful_waiting": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2
+      }
+    },
+    "notes": "72 GT \u2014 RF 200 trees balanced_subsample, watchful\u2192continued for CV: 0.45\u21920.665 (+0.215), holdout 0.757",
+    "wf1_mapped": 0.665,
+    "wf1_4class_holdout": 0.757
   },
   "task3_survival": {
     "n": 75,
     "events": 19,
     "censored": 56,
     "c_index": 0.75,
-    "capra_s_high": {"n": 18, "recur": 9, "rate": 0.5},
-    "capra_s_low": {"n": 57, "recur": 10, "rate": 0.175},
+    "capra_s_high": {
+      "n": 18,
+      "recur": 9,
+      "rate": 0.5
+    },
+    "capra_s_low": {
+      "n": 57,
+      "recur": 10,
+      "rate": 0.175
+    },
     "risk_ratio": 2.86,
     "mean_pred_S12": 0.847,
     "mean_pred_S24": 0.722,
@@ -49,11 +84,14 @@
     "km_actual_S24": 0.783,
     "km_actual_S60": 0.695,
     "median_fu": 38.5,
-    "notes": "PyCox discrete hazard, Greenwood CI. CAPRA-S ≥6 3× risk. C-index 0.75 good for 75 cases."
+    "notes": "PyCox discrete hazard, Greenwood CI. CAPRA-S \u22656 3\u00d7 risk. C-index 0.75 good for 75 cases."
   },
   "cohort_invariants": {
     "psa_median": 7.8,
-    "psa_range": [0.2, 190],
+    "psa_range": [
+      0.2,
+      190
+    ],
     "age_median": 67,
     "pirads_5": 90,
     "pirads_4": 72,
@@ -75,5 +113,12 @@
   },
   "provenance": "CALCULATED vs UPLOADED badges, .env gitignored, no sk-or- committed",
   "no_internet": true,
-  "mock": true
+  "mock": true,
+  "experiments": {
+    "best_proxy": 0.754,
+    "baseline": 0.59,
+    "delta": 0.164,
+    "H1": "WF1 0.45\u21920.665 (mapped) /0.757 holdout",
+    "H2": "refuted C 0.50 vs 0.75"
+  }
 }
