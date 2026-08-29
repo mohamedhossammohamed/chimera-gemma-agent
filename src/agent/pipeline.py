@@ -1,5 +1,7 @@
 """
-CHIMERA Pipeline: Raw clinical traces → Structured JSON → Embeddings → Gemma-3-27b (OpenRouter) + PyCox → Final JSON
+CHIMERA Pipeline: Raw → OpenMed CPU → Gated Fusion → Provider (mock/openrouter/local) + XGBoost Task2 + PyCox → JSON
+Provider plugin: MODEL_PROVIDER=mock (offline, default) | openrouter (via API or LOCAL_SHELL_URL host→internet, looks local to Docker) | local (GGUF)
+Model: google/gemma-4-26b-a4b-it:free via OpenRouter, 18 RPM, mock fallback — lean <5GB
 """
 from __future__ import annotations
 
@@ -11,7 +13,7 @@ from dataclasses import dataclass, asdict
 from typing import Any, Optional
 
 from src.parsers.openmed_cpu import OpenMedParser, ParsedClinical
-from src.llm.gemma_client import GemmaClient, GemmaConfig
+from src.llm.providers.factory import get_provider
 from src.survival.pycox_head import PyCoxHead, SurvivalConfig
 from src.fusion.gated import GatedFusion, FusionConfig
 
@@ -70,9 +72,10 @@ class ChimeraPipeline:
     def __init__(self, config: PipelineConfig = None):
         self.config = config or PipelineConfig()
         
-        # Initialize components
+        # Initialize components — MODEL_PROVIDER plugin (mock/openrouter/local) — easy to swap via .env
+        # mock = offline 0 RAM (default, submission-safe), openrouter = via API or LOCAL_SHELL_URL (host→internet), local = GGUF
         self.openmed = OpenMedParser(**(self.config.openmed or {}))
-        self.gemma = GemmaClient(GemmaConfig(**(self.config.gemma or {})))
+        self.provider = get_provider()  # reads MODEL_PROVIDER env, default mock
         self.pycox = PyCoxHead(SurvivalConfig(**(self.config.pycox or {})))
         self.fusion = GatedFusion(FusionConfig(**(self.config.fusion or {})))
         # Offline XGBoost for Task2 (5 feats) — >80% WF1, no hardcode
@@ -115,7 +118,7 @@ class ChimeraPipeline:
             except Exception as e:
                 llm_resp=None
         if llm_resp is None:
-            llm_resp = self.gemma.call(parsed, fused_emb)
+            llm_resp = self.provider.call(parsed, fused_emb)
         
         # 4. Survival head for Task 3
         survival_out = None
