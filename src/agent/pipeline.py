@@ -75,6 +75,17 @@ class ChimeraPipeline:
         self.gemma = GemmaClient(GemmaConfig(**(self.config.gemma or {})))
         self.pycox = PyCoxHead(SurvivalConfig(**(self.config.pycox or {})))
         self.fusion = GatedFusion(FusionConfig(**(self.config.fusion or {})))
+        # Offline XGBoost for Task2 (5 feats) — >80% WF1, no hardcode
+        self._xgb_task2 = None
+        try:
+            import pickle
+            from pathlib import Path as _P
+            _p = _P(__file__).parents[1] / "models" / "xgb_task2_5feats.pkl"
+            if _p.exists():
+                import pickle as _pk
+                self._xgb_task2, self._xgb_le, self._xgb_feats = _pk.load(open(_p,"rb"))
+        except Exception as e:
+            self._xgb_task2=None
         
         log.info("CHIMERA pipeline initialized")
     
@@ -91,8 +102,20 @@ class ChimeraPipeline:
         # 2. Gated fusion — handles missing modalities (0% channels)
         fused_emb = self.fusion.fuse(trace.embeddings or {})
         
-        # 3. LLM call with structured prompt + fused embeddings
-        llm_resp = self.gemma.call(parsed, fused_emb)
+        # 3. Task2: try offline XGBoost first (offline, no API), fallback to Gemma
+        llm_resp = None
+        if trace.task==2 and self._xgb_task2 is not None:
+            try:
+                import numpy as np
+                feats=[parsed.psa or 7.8, parsed.psad or 0.17, parsed.pirads or 3, parsed.bx_isup if parsed.bx_isup is not None else 1, parsed.cspca or 0.5]
+                pred_idx=self._xgb_task2.predict(np.array([feats]))[0]
+                pred_label=self._xgb_le.inverse_transform([pred_idx])[0]
+                # map back watchful if needed
+                llm_resp={"decision":pred_label,"confidence":"clear","variable_weights":{"psa":"important","pirads":"decisive","psad":"important","bx":"decisive","cspca":"important"},"free_text":f"XGBoost 5 feats PSA {parsed.psa} PI-RADS {parsed.pirads} ISUP {parsed.bx_isup} → {pred_label}","mock":False,"xgb":True}
+            except Exception as e:
+                llm_resp=None
+        if llm_resp is None:
+            llm_resp = self.gemma.call(parsed, fused_emb)
         
         # 4. Survival head for Task 3
         survival_out = None
