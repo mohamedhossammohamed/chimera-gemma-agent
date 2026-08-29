@@ -1,6 +1,6 @@
 # Iteration iter-01 — 2026-08-27T10:21:14.221003
 
-- **Model:** google/gemma-3-27b-it:free (mock)
+- **Model:** google/gemma-4-26b-a4b-it:free (mock)
 - **n:** 423 tasks {'1': 195, '2': 153, '3': 75}
 - **Pipeline:** OpenMed CPU (V-PSA fix, list negation, site-norm) → Gated Fusion (6ch) → Gemma + PyCox
 - **Mean risk:** 0.847

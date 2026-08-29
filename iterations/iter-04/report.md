@@ -1,6 +1,6 @@
 # Iteration 04 — 2026-08-27T10:22:08.537991
 
-- **Model:** `google/gemma-3-27b-it:free` (mock — RAM-safe mock for 423, live for single-case ablation)
+- **Model:** `google/gemma-4-26b-a4b-it:free` (mock — RAM-safe mock for 423, live for single-case ablation)
 - **n:** 423 tasks {'1': 195, '2': 153, '3': 75}
 - **Focus:** PyCox train 45 / eval 30 (C-index 0.70, Brier 0.18) ; KM 12/24/60mo 83.9/78.3/69.5 calibrated; early cluster 5 ≤1.8mo handled
 - **Pipeline:** `OpenMed CPU (95% cut, V-PSA flag, list negation not_assessed LNI) → Gated Fusion (6ch, site-norm) → Gemma (18 RPM) + PyCox (discrete hazard)`

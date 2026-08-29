@@ -1,7 +1,7 @@
 {
   "generated": "2026-08-29T20:10:45.831173Z",
   "agent": "chimera-gemma-agent v0.1.0",
-  "model": "google/gemma-3-27b-it:free (mock, RAM-safe)",
+  "model": "google/gemma-4-26b-a4b-it:free (mock, RAM-safe)",
   "pipeline": "OpenMed CPU (0GB VRAM) \u2192 Gated Fusion (6ch, site-norm) \u2192 Gemma + PyCox",
   "data": {
     "total": 423,
