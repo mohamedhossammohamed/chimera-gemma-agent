@@ -35,7 +35,7 @@ def run_iter(iter_id: str, data_root: pathlib.Path, out_root: pathlib.Path):
         "timestamp": datetime.datetime.now().isoformat(),
         "n": len(outputs),
         "tasks": {str(k): sum(1 for o in outputs if o.task==k) for k in [1,2,3]},
-        "model": os.getenv("OPENROUTER_MODEL","google/gemma-3-27b-it:free"),
+        "model": os.getenv("OPENROUTER_MODEL","google/gemma-4-26b-a4b-it:free"),
         "mock": not bool(os.getenv("OPENROUTER_API_KEY")),
         "mean_risk": sum(risks)/len(risks) if risks else 0,
         "sample_outputs": [o.to_json() for o in outputs[:2]],

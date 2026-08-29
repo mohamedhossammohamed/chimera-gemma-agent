@@ -1,6 +1,6 @@
 # CHIMERA Gemma Agent — Agent Card
 
-**Version:** 0.1.0 | **Model:** `google/gemma-3-27b-it:free` via OpenRouter | **License:** MIT
+**Version:** 0.1.0 | **Model:** `google/gemma-4-26b-a4b-it:free` via OpenRouter | **License:** MIT
 
 ## Overview
 

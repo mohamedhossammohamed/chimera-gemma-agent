@@ -1,6 +1,6 @@
 """
 Gemma OpenRouter client — secure, rate-limited, free-tier aware
-Model: google/gemma-3-27b-it:free (swap via env OPENROUTER_MODEL)
+Model: google/gemma-4-26b-a4b-it:free (swap via env OPENROUTER_MODEL)
 Never hardcode API key — reads OPENROUTER_API_KEY from env / .env
 Rate limit: 20 req/min free tier -> default 18 RPM with token bucket + exponential backoff on 429
 """
@@ -28,7 +28,7 @@ log = logging.getLogger(__name__)
 
 @dataclass
 class GemmaConfig:
-    model: str = os.getenv("OPENROUTER_MODEL", "google/gemma-3-27b-it:free")
+    model: str = os.getenv("OPENROUTER_MODEL", "google/gemma-4-26b-a4b-it:free")
     base_url: str = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
     api_key: Optional[str] = None  # if None, reads env
     rpm: int = int(os.getenv("RATE_LIMIT_RPM", "18"))

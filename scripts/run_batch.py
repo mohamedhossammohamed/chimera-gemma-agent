@@ -22,7 +22,7 @@ def main():
             traces.append(load_trace_from_disk(case_dir))
     if args.limit:
         traces=traces[:args.limit]
-    print(f"Running {len(traces)} traces with {os.getenv('OPENROUTER_MODEL','google/gemma-3-27b-it:free')} mock={not os.getenv('OPENROUTER_API_KEY')}")
+    print(f"Running {len(traces)} traces with {os.getenv('OPENROUTER_MODEL','google/gemma-4-26b-a4b-it:free')} mock={not os.getenv('OPENROUTER_API_KEY')}")
     cfg=PipelineConfig()
     pipe=ChimeraPipeline(cfg)
     outputs=pipe.process_batch(traces)
