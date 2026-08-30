@@ -62,7 +62,7 @@ pre{background:#0b1220;border:1px solid var(--bd);border-radius:10px;padding:12p
     <pre>Raw → OpenMed (95% cut, V-flag, not_assessed LNI)
  → Gated Fusion (6ch, site-norm) → Gemma (18 RPM, backoff)
  → PyCox (discrete hazard, Greenwood) → JSON + provenance
-Model: google/gemma-3-27b-it:free (env OPENROUTER_API_KEY)
+Model: google/gemma-4-26b-a4b-it:free (env OPENROUTER_API_KEY)
 Rate limit: 20 req/min free tier → 18 RPM token bucket
 Mock by default (no key, RAM-safe) — live for single-case ablation</pre>
     <div class="badge ok" style="margin-top:8px">✓ .env gitignored, Sentinel Shield scan 0 secrets</div>
@@ -100,7 +100,7 @@ Mock by default (no key, RAM-safe) — live for single-case ablation</pre>
   <div class="card" style="margin-top:14px;background:#0b1220">
     <b>Agent Card — brief</b> <a href="./agent-card.md" style="font-size:12px;margin-left:8px">full card →</a>
     <div style="font-size:13px;color:var(--m);margin-top:6px">
-      <b>Intended use:</b> Research triage, not clinical. <b>How it works:</b> <code>Raw → OpenMed CPU (95% cut, V-flag, not_assessed) → Gated 6ch (site-norm PC1 79%→42%) → Gemma-3-27b:free 18 RPM + PyCox → JSON + provenance</code>. Model <code>google/gemma-3-27b-it:free</code> via env, mock fallback offline. No secret committed (.env gitignored, scan 0). RAM-safe: no local 27B, torch avoided (libomp). <b>Limitations:</b> mock parity 2%, 181 empty pmhx, 8 missing MRI gated.
+      <b>Intended use:</b> Research triage, not clinical. <b>How it works:</b> <code>Raw → OpenMed CPU (95% cut, V-flag, not_assessed) → Gated 6ch (site-norm PC1 79%→42%) → Gemma-3-27b:free 18 RPM + PyCox → JSON + provenance</code>. Model <code>google/gemma-4-26b-a4b-it:free</code> via env, mock fallback offline. No secret committed (.env gitignored, scan 0). RAM-safe: no local 27B, torch avoided (libomp). <b>Limitations:</b> mock parity 2%, 181 empty pmhx, 8 missing MRI gated.
     </div>
   </div>
 </section>
