@@ -105,19 +105,23 @@ class ChimeraPipeline:
         # 2. Gated fusion — handles missing modalities (0% channels)
         fused_emb = self.fusion.fuse(trace.embeddings or {})
         
-        # 3. Task2: try offline XGBoost first (offline, no API), fallback to Gemma
+        # 3. LLM call — exclusive Gemma 4 when MODEL_PROVIDER=openrouter, mock is failure not fallback
+        # When openrouter (Gemma 4 exclusive), ALL tasks must go through Gemma 4 — no XGBoost bypass, or it's not honest
         llm_resp = None
-        if trace.task==2 and self._xgb_task2 is not None:
+        provider_name = os.getenv("MODEL_PROVIDER","mock").lower()
+        is_mock = provider_name=="mock"
+        # XGBoost only allowed in mock (offline) mode — when openrouter, Gemma 4 must handle all cases
+        if is_mock and trace.task==2 and self._xgb_task2 is not None:
             try:
                 import numpy as np
                 feats=[parsed.psa or 7.8, parsed.psad or 0.17, parsed.pirads or 3, parsed.bx_isup if parsed.bx_isup is not None else 1, parsed.cspca or 0.5]
                 pred_idx=self._xgb_task2.predict(np.array([feats]))[0]
                 pred_label=self._xgb_le.inverse_transform([pred_idx])[0]
-                # map back watchful if needed
-                llm_resp={"decision":pred_label,"confidence":"clear","variable_weights":{"psa":"important","pirads":"decisive","psad":"important","bx":"decisive","cspca":"important"},"free_text":f"XGBoost 5 feats PSA {parsed.psa} PI-RADS {parsed.pirads} ISUP {parsed.bx_isup} → {pred_label}","mock":False,"xgb":True}
+                llm_resp={"decision":pred_label,"confidence":"clear","variable_weights":{"psa":"important","pirads":"decisive","psad":"important","bx":"decisive","cspca":"important"},"free_text":f"XGBoost 5 feats PSA {parsed.psa} PI-RADS {parsed.pirads} ISUP {parsed.bx_isup} → {pred_label}","provider":"xgb","xgb":True}
             except Exception as e:
                 llm_resp=None
         if llm_resp is None:
+            # Exclusive Gemma 4 — if it fails (429/no_key), let exception propagate → pipeline marks FAILURE, not mock
             llm_resp = self.provider.call(parsed, fused_emb)
         
         # 4. Survival head for Task 3

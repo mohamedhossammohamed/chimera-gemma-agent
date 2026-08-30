@@ -63,8 +63,7 @@ class OpenRouterProvider(LLMProvider):
 
     def call(self, parsed, fused_emb):
         if not self.client or not self.key:
-            from .mock import MockProvider
-            return MockProvider().call(parsed,fused_emb) | {"fallback":"no_key"}
+            raise RuntimeError(f"OPENROUTER_API_KEY not set — exclusive {self.cfg.model} requires key, mock is failure not fallback")
         # throttle
         w=self.bucket.consume(1)
         if isinstance(w,float):
@@ -97,14 +96,8 @@ class OpenRouterProvider(LLMProvider):
             except Exception as e:
                 msg=str(e).lower()
                 if "429" not in msg and "rate" not in msg:
-                    log.error(f"OpenRouter fail {e}")
-                    break
+                    raise RuntimeError(f"OpenRouter {self.cfg.model} failed: {e} — mock is failure, not fallback")
                 if attempt==self.cfg.max_retries:
-                    break
+                    raise RuntimeError(f"OpenRouter {self.cfg.model} failed after {self.cfg.max_retries+1} tries: {e} — mock is failure, Gemma 4 exclusive requires success on all cases")
                 time.sleep(min(self.cfg.max_backoff if hasattr(self.cfg,'max_backoff') else 60, 1*(2**attempt)))
-        # fallback to mock on 429/credit
-        from .mock import MockProvider
-        m=MockProvider().call(parsed,fused_emb)
-        m["fallback"]="openrouter_429"
-        m["provider"]="openrouter→mock"
-        return m
+        raise RuntimeError(f"OpenRouter {self.cfg.model} exhausted retries — mock is failure")
